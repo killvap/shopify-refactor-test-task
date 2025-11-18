@@ -1,0 +1,2 @@
+[environments.development]
+store = "https://refactor-test-task-2.myshopify.com/"

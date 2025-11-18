@@ -1,0 +1,12 @@
+# System files
+.DS_Store
+Thumbs.db
+
+# Shopify CLI cache & configs
+.shopify/
+.env
+
+# Node modules
+node_modules/
+package-lock.json
+yarn.lock
