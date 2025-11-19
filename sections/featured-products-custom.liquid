@@ -1,0 +1,140 @@
+{%- style -%}
+  /* Dynamic section padding from settings */
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="featured-products section-{{ section.id }}-padding">
+  <div class="page-width">
+    {% if section.settings.title != blank %}
+      <h2 class="featured-products__title">
+        {{ section.settings.title | escape }}
+      </h2>
+    {% endif %}
+
+    <featured-products-custom class="featured-products__grid" data-section-id="{{ section.id }}">
+      {% comment %} 
+        Fetch the collection object.
+      {% endcomment %}
+      {%- assign collection = section.settings.collection -%}
+
+      {% if collection != blank %}
+        {% comment %} 
+          Create an array of product IDs currently in the cart to filter them out 
+        {% endcomment %}
+        {%- assign cart_item_ids = cart.items | map: 'product_id' -%}
+
+        <ul class="featured-products__list">
+          {%- for product in collection.products limit: section.settings.products_to_show -%}
+            
+            {% comment %} Render product only if it's not in the cart {% endcomment %}
+            {%- unless cart_item_ids contains product.id -%}
+              <li class="featured-products__item">
+                <div class="single-product">
+                    
+                  <div class="featured-products__image-wrapper">
+                    <a href="{{ product.url }}">
+                      <img 
+                        class="featured-img"
+                        src="{{ product.featured_image | image_url: width: 500 }}"
+                        alt="{{ product.featured_image.alt | escape }}"
+                        width="500"
+                        height="{{ 500 | divided_by: product.featured_image.aspect_ratio | ceil }}"
+                        loading="lazy"
+                      >
+                    </a>
+                  </div>
+
+                  <h3 class="product-title">
+                    <a href="{{ product.url }}">{{ product.title }}</a>
+                  </h3>
+                  
+                  <div class="featured-products__actions">
+                      <form action="/cart/add" method="post" enctype="multipart/form-data">
+                          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                          <button type="submit" name="add" class="featured-products__add-btn">
+                              Add to cart - {{ product.price | money_without_trailing_zeros }}
+                          </button>
+                      </form>
+                  </div>
+
+                </div>
+              </li>
+            {%- endunless -%}
+
+          {%- endfor -%}
+        </ul>
+      {% else %}
+        <p class="featured-products__empty">Select a collection to see products.</p>
+      {% endif %}
+    </featured-products-custom>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Featured Products Custom",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Top padding",
+        "default": 36
+    },
+    {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Bottom padding",
+        "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products Custom"
+    }
+  ]
+}
+{% endschema %}
