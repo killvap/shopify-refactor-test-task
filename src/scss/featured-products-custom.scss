@@ -1,0 +1,105 @@
+@use "fonts";
+
+// Базові токени секції Featured Products
+$featured-font-family: "Gothic A1", sans-serif;
+
+$featured-color-text: #656874;
+$featured-color-button-bg: #464b90;
+$featured-color-button-text: #ffffff;
+
+$featured-gap-mobile: 48px;
+$featured-page-padding-desktop: 5rem;
+$featured-image-max-width: 520px;
+
+$featured-title-font-size: 26px;
+$featured-title-line-height: 36px;
+
+$featured-product-title-font-size: 22px;
+$featured-product-title-line-height: 42px;
+
+$featured-button-font-size: 16px;
+$featured-button-line-height: 26px;
+$featured-button-padding-y: 18px;
+$featured-button-padding-x: 45px;
+$featured-button-radius: 40px;
+$featured-button-max-width: 285px;
+
+$featured-breakpoint-md: 768px;
+
+.featured-products {
+  .page-width {
+    padding: 0;
+    font-family: $featured-font-family;
+
+    .featured-products__title {
+      font-family: $featured-font-family;
+      font-size: $featured-title-font-size;
+      font-weight: 900;
+      line-height: $featured-title-line-height;
+      text-align: center;
+      color: $featured-color-text;
+    }
+
+    .featured-products__list {
+      display: flex;
+      flex-direction: column;
+      gap: $featured-gap-mobile;
+      list-style-type: none;
+      padding-left: 0;
+      padding-right: 0;
+
+      .featured-products__image-wrapper {
+        text-align: center;
+
+        img {
+          width: 100%;
+          max-width: $featured-image-max-width;
+          height: auto;
+        }
+      }
+
+      .product-title {
+        text-align: center;
+
+        a {
+          text-decoration: none;
+          color: $featured-color-text;
+          font-size: $featured-product-title-font-size;
+          line-height: $featured-product-title-line-height;
+          font-weight: 700;
+        }
+      }
+
+      .featured-products__actions {
+        text-align: center;
+
+        button {
+          font-family: $featured-font-family;
+          font-size: $featured-button-font-size;
+          font-weight: 400;
+          line-height: $featured-button-line-height;
+          background-color: $featured-color-button-bg;
+          border: none;
+          padding: $featured-button-padding-y $featured-button-padding-x;
+          border-radius: $featured-button-radius;
+          color: $featured-color-button-text;
+          max-width: $featured-button-max-width;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: $featured-breakpoint-md) {
+  .featured-products {
+    .page-width {
+      padding: 0 $featured-page-padding-desktop;
+
+      .featured-products__list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
