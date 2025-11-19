@@ -1,6 +1,6 @@
 # Shopify Refactor test task – Featured Products Custom section
 
-## Tech stack
+# Tech stack
 
 - Shopify theme (Dawn 15.4.0 as a base)
 - Shopify CLI
@@ -11,7 +11,7 @@
 
 ---
 
-## Project structure
+# Project structure
 
 Key folders/files:
 
@@ -28,7 +28,7 @@ Key folders/files:
 
 ---
 
-## Requirements
+# Requirements
 
 Minimal environment:
 
@@ -40,27 +40,27 @@ Minimal environment:
 
 ---
 
-## Installation
+# Installation
 
 
-# clone repository
+## clone repository
 git clone git@github.com:killvap/shopify-refactor-test-task.git
 cd SHOPIFY_TEST_TASK
 
-# install dependencies
+## install dependencies
 npm install
 
 
 # Development
 
-# 1. Compile SCSS → CSS and start watcher
+## 1. Compile SCSS → CSS and start watcher
 npx gulp
 
-# 2. Run Shopify dev environment
+## 2. Run Shopify dev environment
 shopify login --store refactor-test-task-2.myshopify.com
 shopify theme dev -e development
 
-# Build before deploy (optional)
+## Build before deploy (optional)
 
 npx gulp build
 shopify theme push --unpublished
