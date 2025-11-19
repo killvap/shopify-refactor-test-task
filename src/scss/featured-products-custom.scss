@@ -58,10 +58,10 @@ $featured-breakpoint-md: 768px;
         }
       }
 
-      .product-title {
+      .featured-products__product-title {
         text-align: center;
 
-        a {
+        .featured-products__product-link {
           text-decoration: none;
           color: $featured-color-text;
           font-size: $featured-product-title-font-size;

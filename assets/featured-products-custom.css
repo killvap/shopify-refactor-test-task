@@ -47,10 +47,10 @@
   max-width: 520px;
   height: auto;
 }
-.featured-products .page-width .featured-products__list .product-title {
+.featured-products .page-width .featured-products__list .featured-products__product-title {
   text-align: center;
 }
-.featured-products .page-width .featured-products__list .product-title a {
+.featured-products .page-width .featured-products__list .featured-products__product-title .featured-products__product-link {
   text-decoration: none;
   color: #656874;
   font-size: 22px;
