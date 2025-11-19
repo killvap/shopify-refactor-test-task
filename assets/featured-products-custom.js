@@ -6,11 +6,15 @@ class FeaturedProductsCustom extends HTMLElement {
 	constructor() {
 		super();
 		this.sectionId = this.dataset.sectionId;
+
+		// Get the default cart notification popup
+		this.cartNotification = document.querySelector("cart-notification");
+
 		this.init();
 	}
 
 	init() {
-		// Initialize listeners, removing old ones to prevent duplication
+		// Initialize event listeners, removing old ones to prevent duplication
 		this.querySelectorAll('form[action*="/cart/add"]').forEach((form) => {
 			form.removeEventListener("submit", this.onSubmit.bind(this));
 			form.addEventListener("submit", this.onSubmit.bind(this));
@@ -22,7 +26,7 @@ class FeaturedProductsCustom extends HTMLElement {
 
 		const form = event.target;
 		const submitButton = form.querySelector('[name="add"]');
-		const originalButtonText = submitButton.textContent;
+		const originalButtonText = submitButton ? submitButton.textContent : "";
 
 		// Prevent multiple clicks
 		if (submitButton) {
@@ -31,8 +35,23 @@ class FeaturedProductsCustom extends HTMLElement {
 		}
 
 		const formData = new FormData(form);
-		// Request 'cart-icon-bubble' section to update header icon
-		formData.append("sections", "cart-icon-bubble");
+
+		// Prepare data so Shopify returns cart popup and icon HTML via the Section Rendering API
+		if (
+			this.cartNotification &&
+			typeof this.cartNotification.getSectionsToRender === "function"
+		) {
+			const sectionsToRender = this.cartNotification
+				.getSectionsToRender()
+				.map((section) => section.id);
+
+			formData.append("sections", sectionsToRender.join(","));
+			formData.append("sections_url", window.location.pathname);
+		} else {
+			// fallback: at least update the cart icon
+			formData.append("sections", "cart-icon-bubble");
+			formData.append("sections_url", window.location.pathname);
+		}
 
 		const config = {
 			method: "POST",
@@ -50,26 +69,35 @@ class FeaturedProductsCustom extends HTMLElement {
 			);
 			const responseJson = await response.json();
 
-			if (response.ok) {
-				// 1. Refresh section to hide the added product
-				await this.updateSection();
-
-				// 2. Update global cart icon in header
-				if (
-					responseJson.sections &&
-					responseJson.sections["cart-icon-bubble"]
-				) {
-					this.updateCartCount(responseJson.sections["cart-icon-bubble"]);
-				}
-			} else {
+			if (!response.ok) {
 				this.handleError(
 					submitButton,
 					originalButtonText,
 					responseJson.description
 				);
+				return;
+			}
+
+			// Refresh section to hide the added product
+			await this.updateSection();
+
+			// Refresh default popup if it exist
+			if (this.cartNotification && responseJson.sections) {
+				// renderContents update section and shows popup
+				this.cartNotification.renderContents(responseJson);
+			} else if (
+				responseJson.sections &&
+				responseJson.sections["cart-icon-bubble"]
+			) {
+				// fallback: just update bubble in the header
+				this.updateCartCount(responseJson.sections["cart-icon-bubble"]);
 			}
 		} catch (error) {
-			this.handleError(submitButton, originalButtonText, error);
+			this.handleError(
+				submitButton,
+				originalButtonText,
+				error?.message || error
+			);
 		}
 	}
 
@@ -102,7 +130,6 @@ class FeaturedProductsCustom extends HTMLElement {
 
 	handleError(button, originalText, error) {
 		console.error("Error:", error);
-		alert(error || "Error adding to cart");
 		if (button) {
 			button.removeAttribute("disabled");
 			button.textContent = originalText;
